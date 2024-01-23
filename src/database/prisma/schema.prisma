@@ -1,0 +1,102 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// schema.prisma
+
+// Definisi entitas Produk
+model Product {
+  id          String   @id @default(uuid())
+  name        String
+  category    String
+  image       String
+  price       Decimal
+  description String
+  isAvailable    Boolean        @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  // Relasi ke Ulasan (Review)
+  reviews     Review[]
+  carts       Cart[]
+}
+
+// Definisi entitas Pengguna
+model User {
+  id            String         @id @default(uuid())
+  username      String
+  email         String         @unique
+  password      String
+  role          String         @default("user")
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  // Relasi ke Keranjang (Cart)
+  cart          Cart[]
+  // Relasi ke Ulasan (Review)
+  reviews       Review[]
+  // Relasi ke Riwayat Pesanan (HistoryOrder)
+  historyOrders HistoryOrder[]
+  checkouts     Checkout[]
+}
+
+// Definisi entitas Keranjang
+model Cart {
+  id             String        @id @default(uuid())
+  quantity       Int
+  // Relasi ke Produk
+  product        Product       @relation(fields: [productId], references: [id])
+  productId      String
+  // Relasi ke Pengguna
+  user           User          @relation(fields: [userId], references: [id])
+  userId         String
+  // Relasi ke Checkout
+  checkout       Checkout?     @relation(fields: [checkoutId], references: [id])
+  checkoutId     String?
+  // Relasi ke HistoryOrder
+  historyOrders  HistoryOrder? @relation(fields: [historyOrderId], references: [id])
+  historyOrderId String?
+}
+
+// Definisi entitas Checkout
+model Checkout {
+  id          String   @id @default(uuid())
+  totalAmount Float
+  // Relasi ke Pengguna
+  user        User     @relation(fields: [userId], references: [id])
+  userId      String
+  // Relasi ke Keranjang (Cart)
+  cart        Cart[]
+  createdAt   DateTime @default(now())
+}
+
+// Definisi entitas Riwayat Pesanan
+model HistoryOrder {
+  id          String   @id @default(uuid())
+  totalAmount Decimal
+  createdAt   DateTime @default(now())
+  // Relasi ke Pengguna
+  user        User     @relation(fields: [userId], references: [id])
+  userId      String
+  // Relasi ke Keranjang (Cart)
+  cart        Cart[]
+}
+
+// Definisi entitas Ulasan
+model Review {
+  id        Int     @id @default(autoincrement())
+  text      String
+  rating    Int
+  // Relasi ke Produk
+  product   Product @relation(fields: [productId], references: [id])
+  productId String
+  // Relasi ke Pengguna
+  user      User    @relation(fields: [userId], references: [id])
+  userId    String
+}
