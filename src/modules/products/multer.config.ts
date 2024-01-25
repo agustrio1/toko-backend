@@ -1,15 +1,12 @@
 import { diskStorage } from "multer";
-import { extname } from "path";
+import { extname, basename } from "path";
 
 export const multerConfig = {
     storage: diskStorage({
         destination: './public/images',
         filename: (req, file, cb) => {
-            const randomName = Array(32)
-            .fill(null)
-            .map(() => Math.round(Math.random() * 16).toString(16))
-            .join('');
-            return cb(null, `${randomName}${extname(file.originalname)}`)
+            const originalName = basename(file.originalname);
+            return cb(null, originalName);
         }
     })
 }

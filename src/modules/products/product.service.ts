@@ -5,10 +5,6 @@ import {
   CreateProductDTO,
   UpdateProductDTO,
 } from './dto/product.dto';
-import { multerConfig } from './multer.config';
-import * as fs from 'fs';
-import * as path from 'path';
-
 
 @Injectable()
 export class ProductService {
